@@ -36,11 +36,13 @@ public:
     string rd;
     string offset;
     string currentInstruction;
+    string jAddress;
     
 public:
     
     void setCurrentInstruction(string instruction);
     void setInstructionDetails();
+    void clearInstructionDetails();
     
 };
 

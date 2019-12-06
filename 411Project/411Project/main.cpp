@@ -49,21 +49,25 @@ int main(int argc, const char * argv[]) {
     
     vector <string> instruction = instructionFileRead(); // Loads Instruction File
     
-    IF.setCurrentInstruction(PC.getInstruction(instruction));
-    
-    cout << "The OP Code is: "     << IF.op << endl;
-    cout << "The rs register is: " << IF.rs << endl;
-    cout << "The rt register is: " << IF.rt << endl;
-
-    if (IF.rt.length() != 0){
-        cout << "The rd register is: " << IF.rd << endl;
+    for(int i = 0; i < (instruction.size())/4; i ++){
+        
+        IF.setCurrentInstruction(PC.getInstruction(instruction));
+        IF.setInstructionDetails();
+        
+        cout << "The OP Code is: "     << IF.op << endl;
+        cout << "The rs register is: " << IF.rs << endl;
+        cout << "The rt register is: " << IF.rt << endl;
+        
+        if (IF.rd.length() != 0){
+            cout << "The rd register is: " << IF.rd << endl;
+        }
+        else{
+            cout << "The offset of I Type is: " << IF.offset << endl;
+        }
+        PC.PCNext();
+        IF.clearInstructionDetails();
     }
-    else{
-        cout << "The offset of I Type is: " << IF.offset << endl;
-    }
 
-    
-    
     return 0;
 }
 

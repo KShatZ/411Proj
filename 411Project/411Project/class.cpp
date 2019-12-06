@@ -6,6 +6,7 @@ void ProgramCounter::PCNext(){
     PC += 4;
     cout << "Incrementing PC to address: "<< PC << endl;
     
+    
 };
 
 string ProgramCounter::getInstruction(vector<string> instructionBank){
@@ -34,10 +35,10 @@ void instructionFetch::setInstructionDetails(){
     
     //OPCODE DECODE
     string OpCode;
-    for (int i = 0; i < 5; i++){
+    for (int i = 0; i < 6; i++){
         OpCode += currentInstruction[i];
+        cout << OpCode << endl;
     }
-    
     if (OpCode == RTYPE){
         
         string funct;
@@ -92,7 +93,7 @@ void instructionFetch::setInstructionDetails(){
                 rt += currentInstruction[i];
             }
             for(int i = 16; i < 21; i++){   // rd Register
-                rs += currentInstruction[i];
+                rd += currentInstruction[i];
             }
         }
         
@@ -104,15 +105,40 @@ void instructionFetch::setInstructionDetails(){
             for(int i = 11; i < 16; i++){   // rt Register
                 rt += currentInstruction[i];
             }
-            for(int i = 16; i < 31; i++){    //offset
+            for(int i = 16; i < 32; i++){    //offset
                 offset += currentInstruction[i];
             }
             
         }
         
     }
+    else{
+        
+        for(int i = 6; i < 32; i++){   // J Address
+            jAddress += currentInstruction[i];
+        }
+    }
     
     
     
 }
 
+void instructionFetch::clearInstructionDetails(){
+    
+    if (rs.length() != 0){    //Clears rd register
+        rs.clear();
+    }
+    if (rt.length() != 0){    //Clears rd register
+        rt.clear();
+    }
+    
+    if (rd.length() != 0){    //Clears rd register
+        rd.clear();
+    }
+    if(offset.length() != 0){ //Clears offset value
+        offset.clear();
+    }
+    if(jAddress.length() != 0){
+        jAddress.clear();
+    }
+}
