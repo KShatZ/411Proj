@@ -142,3 +142,39 @@ void instructionFetch::clearInstructionDetails(){
         jAddress.clear();
     }
 }
+
+
+Reg::Reg() {
+    
+    //Setting up register vector
+    
+    for(int i = 0; i < 32; i++){
+        
+        registers.push_back("");
+        
+        for(int j = 0; j < 32; j++){
+            
+            registers[i] += "0";
+        }
+    }
+    
+}
+
+void Reg::setSrcDest(string readReg1, string readReg2, string writeReg){
+    
+    readRegister1 = stoi(readReg1, nullptr, 2);
+    readRegister2 = stoi(readReg2, nullptr, 2);
+    writeRegister = stoi(writeReg, nullptr, 2);
+    
+}
+
+void Reg:: setReg(string value, int R){
+    
+    registers[R] = value;
+}
+
+string Reg::getRegValue(int R){
+    
+    return registers[R];
+    
+}

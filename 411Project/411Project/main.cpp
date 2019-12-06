@@ -46,6 +46,7 @@ int main(int argc, const char * argv[]) {
     
     ProgramCounter PC;  // PC = 0
     instructionFetch IF;
+    Reg Register;
     
     vector <string> instruction = instructionFileRead(); // Loads Instruction File
     
@@ -54,7 +55,6 @@ int main(int argc, const char * argv[]) {
         IF.setCurrentInstruction(PC.getInstruction(instruction));
         IF.setInstructionDetails();
         
-        cout << "The OP Code is: "     << IF.op << endl;
         cout << "The rs register is: " << IF.rs << endl;
         cout << "The rt register is: " << IF.rt << endl;
         
@@ -64,6 +64,13 @@ int main(int argc, const char * argv[]) {
         else{
             cout << "The offset of I Type is: " << IF.offset << endl;
         }
+        
+        Register.setSrcDest(IF.rs, IF.rt, IF.offset);
+        cout << "The first source register is : " << Register.readRegister1
+        << "The second source register is : " << Register.readRegister2
+        << "The Destination Register is : " << Register.writeRegister;
+        
+        
         PC.PCNext();
         IF.clearInstructionDetails();
     }
