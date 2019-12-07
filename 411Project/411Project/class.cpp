@@ -27,7 +27,6 @@ void instructionFetch::setCurrentInstruction(string instruction){
     
     currentInstruction = instruction;
     cout << "String received for instruction fetch"<< endl;
-    cout << "Current instruction is: " << currentInstruction <<endl;
 
 }
 
@@ -35,10 +34,11 @@ void instructionFetch::setInstructionDetails(){
     
     //OPCODE DECODE
     string OpCode;
+    
     for (int i = 0; i < 6; i++){
         OpCode += currentInstruction[i];
-        cout << OpCode << endl;
     }
+    
     if (OpCode == RTYPE){
         
         string funct;
@@ -175,6 +175,182 @@ void Reg:: setReg(string value, int R){
 
 string Reg::getRegValue(int R){
     
-    return registers[R];
+    return registers.at(R);
     
 }
+
+void Memory::writeMem(string value, int M){
+    
+    memory[M] = value;
+    
+}
+
+string Memory::getMemValue(int M){
+    
+    return memory.at(M);
+}
+
+void Memory::setInitialMemory(){
+    
+    fstream MemoryStream;
+    string fileName;
+    
+    cout << "Enter file name of initial memory state: " ;
+    cin >> fileName;
+    
+    MemoryStream.open(fileName);
+    
+    if (MemoryStream.is_open()){
+        
+        while(!MemoryStream.eof()){ //While end of file is not reached
+            
+            string stringLine;
+            getline(MemoryStream,stringLine);
+            memory.push_back(stringLine);
+            
+        }
+        
+    }
+    
+    else{
+        
+        cout << "Can't find " << fileName << ", initial memory is not set" << endl;
+    }
+    
+}
+
+void ALU::carryOutInstruction(instructionFetch instruction){
+    
+    if(instruction.op == 0){ // Add
+        
+        result = addBinary(input1, input2);
+    }
+
+    else if(instruction.op == 1){ // Subtract
+        
+        int a = stoi(input1, nullptr, 2);
+        int b = stoi(input2, nullptr, 2);
+        
+        int c = a - b;
+        
+        result = decimalToBinary(c);
+        
+    }
+    
+    else if(instruction.op == 3){ // and
+        
+        for(int i = 0; i < 32; i++){
+            
+            if(input1[i] == '1' and input2[i] == '1'){
+                
+                result += '1';
+                
+            }
+            else{
+                
+                result += '0';
+                
+            }
+        }
+        
+        
+    }
+    else if(instruction.op == 4){ // or
+        
+        for(int i = 0; i < 32; i++){
+            
+            if(input1[i] == '1' or input2[i] == '1'){
+                
+                result += '1';
+                
+            }
+            else{
+                
+                result += '0';
+                
+            }
+        }
+        
+    }
+    else if(instruction.op == 5){ // nor
+        
+        for(int i = 0; i < 32; i++){
+            
+            if(input1[i] == '0' and input2[i] == '0'){
+                
+                result += '1';
+                
+            }
+            else{
+                result += '0';
+            }
+            
+        }
+        
+    }
+    
+}
+
+string ALU::addBinary(string a, string b){     // Adding two binary strings
+    string result = ""; // Initialize result
+    int s = 0;          // Initialize digit sum
+    
+    // Traverse both strings starting from last
+    // characters
+    int i = a.size() - 1, j = b.size() - 1;
+    while (i >= 0 || j >= 0 || s == 1)
+    {
+        // Comput sum of last digits and carry
+        s += ((i >= 0)? a[i] - '0': 0);
+        s += ((j >= 0)? b[j] - '0': 0);
+        
+        // If current digit sum is 1 or 3, add 1 to result
+        result = char(s % 2 + '0') + result;
+        
+        // Compute carry
+        s /= 2;
+        
+        // Move to next digits
+        i--; j--;
+    }
+    return result;
+}
+
+
+
+string ALU::decimalToBinary(int c){
+   
+    int a[32],i;
+    string result;
+    
+    for(i=0; c>0; i++)
+    {
+        a[i]=c%2;
+        c= c/2;
+    }
+    
+    for(i=i-1 ;i>=0 ;i--)
+    {
+        result += to_string(a[i]);
+    
+    }
+    
+    return result;
+    
+}
+
+void ALU::setInputs(string a, string b){
+    
+    input1 = a;
+    input2 = b;
+    
+}
+
+void ALU::clearValues(){
+    
+    input1.clear();
+    input2.clear();
+    result.clear();
+    
+}
+

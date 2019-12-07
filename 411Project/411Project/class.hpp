@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <fstream>
 
 #include "global.h"
 
@@ -15,7 +16,8 @@ using namespace std;
 
 
 class ProgramCounter{
-    
+
+public:
     int PC = 0;
     string currentInstruction;
     
@@ -69,7 +71,7 @@ public:
     int readRegister1;  // First Source Register  (rs)
     int readRegister2;  // Second Source Register (rt)
     int writeRegister;  // Destination Register   (rd)
-    string writeData;      // Data to be written  (32 bits)
+    string writeData;   // Data to be written  (32 bits)
 
 public:
     
@@ -85,18 +87,38 @@ public:
     // Function to write into text file
 };
 
+class ALU{
+    
+public:
+    
+    string input1;
+    string input2;
+    string result;
+    
+public:
+    
+    void carryOutInstruction(instructionFetch instruction);
+    void setInputs(string a, string b);
+    void clearValues();
+    string addBinary (string a, string b);
+    string twoCompSub(string a);
+    string decimalToBinary(int c);
+    
+};
+
 
 
 class Memory{
     
+public:
     vector <string> memory;
     
 public:
 
     void writeMem(string value, int M);
     string getMemValue(int M);
-    void setInitialMemory(string fileName);
-    
+    void setInitialMemory();
+    //Function to write into text file
 };
 
 
