@@ -20,12 +20,16 @@ class ProgramCounter{
 public:
     int PC = 0;
     string currentInstruction;
+    int sizeOfBank;
     
     
 public:
     
     void PCNext();
     string getInstruction(vector<string> instructionBank);
+    void setBankSize(vector<string> instructionBank);
+    void setPC(string address); //JUMP instruction
+    void setPC(int address); // BEQ instruction
     
 };
 
@@ -97,7 +101,7 @@ public:
     
 public:
     
-    void carryOutInstruction(instructionFetch instruction);
+    void carryOutRInstruction(instructionFetch instruction);
     void setInputs(string a, string b);
     void clearValues();
     string addBinary (string a, string b);
@@ -121,6 +125,30 @@ public:
     //Function to write into text file
 };
 
+class IALU{
+    
+public:
+
+    
+    int rs;     // rs + offset equal MemoryVector index
+    int rt;     // RegisterVector index
+    int offset;
+    
+    string writeValue;
+    int PCAdressAdder;
+    
+public:
+    
+    void setInputs(string a, string b, string c);
+    void carryOutIInstruction(instructionFetch instruction, Memory memVector, Reg regVector, ProgramCounter PC);
+    string decimalToBinary(int c);
+    string addBinary (string a, string b);
+
+    
+    
+    
+    
+};
 
 
 #endif /* classes_hpp */

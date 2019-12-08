@@ -17,16 +17,32 @@ string ProgramCounter::getInstruction(vector<string> instructionBank){
         
         instruction += instructionBank[i];
     }
-    
-    cout << "Grabbing instruction for execution" << endl;
+
     return instruction;
+    
+}
+
+void ProgramCounter::setBankSize(vector<string> instructionBank){
+    
+    sizeOfBank = instructionBank.size();
+    
+}
+
+void ProgramCounter::setPC(string address){
+
+    PC = stoi(address, nullptr, 2);
+    
+}
+
+void ProgramCounter::setPC(int address){
+    
+    PC = address;
     
 }
 
 void instructionFetch::setCurrentInstruction(string instruction){
     
     currentInstruction = instruction;
-    cout << "String received for instruction fetch"<< endl;
 
 }
 
@@ -99,25 +115,27 @@ void instructionFetch::setInstructionDetails(){
         
         else{ // I-Type Instruction
             
-            for(int i = 6; i < 11; i++){    // rs Register
-                rs += currentInstruction[i];
+            if(op == 7){
+                
+                for (int i = 6; i < 32; i++){
+                    jAddress += currentInstruction[i];
+                }
             }
-            for(int i = 11; i < 16; i++){   // rt Register
-                rt += currentInstruction[i];
+            else{
+                for(int i = 6; i < 11; i++){    // rs Register
+                    rs += currentInstruction[i];
+                }
+                for(int i = 11; i < 16; i++){   // rt Register
+                    rt += currentInstruction[i];
+                }
+                for(int i = 16; i < 32; i++){    //offset
+                    offset += currentInstruction[i];
+                }
             }
-            for(int i = 16; i < 32; i++){    //offset
-                offset += currentInstruction[i];
-            }
-            
         }
         
     }
-    else{
-        
-        for(int i = 6; i < 32; i++){   // J Address
-            jAddress += currentInstruction[i];
-        }
-    }
+ 
     
     
     
@@ -219,7 +237,7 @@ void Memory::setInitialMemory(){
     
 }
 
-void ALU::carryOutInstruction(instructionFetch instruction){
+void ALU::carryOutRInstruction(instructionFetch instruction){
     
     if(instruction.op == 0){ // Add
         
@@ -353,4 +371,106 @@ void ALU::clearValues(){
     result.clear();
     
 }
+
+
+void IALU::setInputs(string a, string b, string c){
+    
+    rs     = stoi(a, nullptr, 2);
+    rt     = stoi(b, nullptr, 2);
+    offset = stoi(c,nullptr,2);
+    
+}
+
+void IALU::carryOutIInstruction(instructionFetch instruction, Memory memVector, Reg regVector, ProgramCounter PC){
+    
+    //LW
+    if(instruction.op == 8){
+        
+        writeValue = memVector.memory.at(stoi(regVector.registers.at(rs), nullptr, 2) + offset);
+        
+    }
+    
+    //SW
+    else if(instruction.op == 9){
+        
+        writeValue = regVector.registers.at(rt);
+        
+        
+    }
+    
+    //ADDIU
+    else if(instruction.op == 2){
+        
+        string tempValue = "00000000000000000000000000000000";
+        writeValue = decimalToBinary(stoi(regVector.registers.at(rs), nullptr, 2) + offset);
+        writeValue = addBinary(writeValue, tempValue);
+        
+    }
+    
+    //BEQ
+    else if(instruction.op == 6){
+        
+        if(regVector.registers.at(rs) == regVector.registers.at(rt)){
+            
+            int a = 4 * offset;
+            cout << "Branching" << endl;
+            PCAdressAdder = a;
+        }
+            
+            else{
+                
+                cout << "Cant Branch Sorry" << endl;
+            }
+            
+        }
+    
+}
+
+string IALU::decimalToBinary(int c){
+    
+    int a[32],i;
+    string result;
+    
+    for(i=0; c>0; i++)
+    {
+        a[i]=c%2;
+        c= c/2;
+    }
+    
+    for(i=i-1 ;i>=0 ;i--)
+    {
+        result += to_string(a[i]);
+        
+    }
+    
+    return result;
+    
+}
+
+string IALU::addBinary(string a, string b){     // Adding two binary strings
+    string result = ""; // Initialize result
+    int s = 0;          // Initialize digit sum
+    
+    // Traverse both strings starting from last
+    // characters
+    int i = a.size() - 1, j = b.size() - 1;
+    while (i >= 0 || j >= 0 || s == 1)
+    {
+        // Comput sum of last digits and carry
+        s += ((i >= 0)? a[i] - '0': 0);
+        s += ((j >= 0)? b[j] - '0': 0);
+        
+        // If current digit sum is 1 or 3, add 1 to result
+        result = char(s % 2 + '0') + result;
+        
+        // Compute carry
+        s /= 2;
+        
+        // Move to next digits
+        i--; j--;
+    }
+    return result;
+}
+
+
 
